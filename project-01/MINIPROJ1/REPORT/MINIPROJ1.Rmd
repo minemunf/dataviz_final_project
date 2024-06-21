@@ -1,0 +1,97 @@
+---
+title: "Mini Project 1"
+output: html_notebook
+Author: "Michael Coombs"
+---
+
+
+```{r}
+#loading library and dataset
+library(tidyverse)
+library(ggrepel)
+
+data <- read_csv("https://raw.githubusercontent.com/reisanar/datasets/master/fuel.csv")
+data
+```
+```{r}
+#top 3 electric car mpg from 2012 to 2017.
+top3eleccarssummary <- data %>%
+  mutate(carname = paste(make, model)) %>%
+  group_by(fuel_type, year) %>%
+  filter(fuel_type == "Electricity", year >= 2012 & year <= 2017) %>%
+  arrange(desc(year)) %>%
+  slice_max(combined_mpg_ft1, n = 3, with_ties = FALSE) %>%
+  summarize(year, carname, fuel_type, combined_mpg_ft1) %>%
+  group_by(year) %>%
+  arrange(desc(year))
+
+top3eleccarssummary
+```
+```{r, fig.width= 12}
+#plotting top 3 electric cars for the last 6 years of dataset
+
+elecplot <- ggplot(top3eleccarssummary, aes(x = combined_mpg_ft1, y = carname, fill = combined_mpg_ft1)) + 
+  geom_col() +
+  facet_wrap(~ year, scales = "free") + 
+  labs(y = "Make and model", x = "Combined Fuel Economy, equivalent MPG.", title = "Efficiency of the top 3 Electric-Powered cars from 2012 to 2017") +
+  geom_text(aes(label = combined_mpg_ft1), stat = "identity", hjust = 1.25, colour = "white")
+
+elecplot
+
+```
+
+
+```{r} 
+#top 3 gas car mpg from 2012 to 2017.
+top3gascarssummary <- data %>%
+  mutate(carname = paste(make, model)) %>%
+  group_by(fuel_type, year) %>%
+  filter(fuel_type == "Regular", year >= 2012 & year <= 2017) %>%
+  arrange(desc(year)) %>%
+  slice_max(combined_mpg_ft1, n = 3, with_ties = FALSE) %>%
+  summarize(year, carname, engine_cylinders, combined_mpg_ft1) %>%
+  group_by(year) %>%
+  arrange(desc(year))
+
+top3gascarssummary
+```
+```{r, fig.width= 12}
+# repeating this for gas cars
+
+#plotting top 3 gas cars for the last 6 years of dataset
+
+gasplot <- ggplot(top3gascarssummary, aes(x = combined_mpg_ft1, y = carname, fill = combined_mpg_ft1)) + 
+  geom_col() +
+  facet_wrap(~ year, scales = "free") + 
+  labs(y = " Make and model", x = "Combined Fuel Economy, MPG.", title = "MPG of the top 3 Gas-Powered cars from 2012 to 2017") +
+  geom_text(aes(label = combined_mpg_ft1), stat = "identity", hjust = 1.25, colour = "white")
+gasplot
+
+
+```
+
+```{r}
+#line graph of highest fuel efficiency per year, starting from 2000.
+bestcarsummary <- data %>%
+  mutate(carfullname = paste(year, make, model)) %>%
+  group_by(year) %>%
+  filter(year >= 2000) %>%
+  arrange(desc(year)) %>%
+  slice_max(combined_mpg_ft1, with_ties = FALSE) %>%
+  summarize(year, carfullname, fuel_type, combined_mpg_ft1) %>%
+  arrange(desc(year))
+
+bestcarsummary
+```
+```{r, fig.width= 12}
+bestcarplot <- 
+  ggplot(bestcarsummary, aes(x = year, y = combined_mpg_ft1, label = carfullname)) +
+  geom_line() +
+  geom_point(color = "darkgreen")+
+  geom_label_repel(max.overlaps = Inf, segment.linetype = 1, point.size = 1, min.segment.length = 0) +
+  labs(y = "Combined Fuel efficiency, MPG", x = "Year", title = "Best Available Combined Fuel Efficiency from 1984-2017")
+
+bestcarplot
+```
+
+

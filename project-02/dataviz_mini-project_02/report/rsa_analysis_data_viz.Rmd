@@ -1,0 +1,103 @@
+---
+title: "Data Visualization - Mini-Project 2"
+author: "Michael Coombs `mcoombs7971@floridapoly.edu`"
+output: html_notebook
+---
+
+```{r}
+#loading library and dataset
+library(tidyverse)
+library(plotly)
+library(sf)
+library(htmlwidgets)
+
+setwd("D:/Downloads/dataviz_mini-project_02")
+data <- read_csv("https://raw.githubusercontent.com/reisanar/datasets/master/fifa18.csv")
+data
+world_shapes <- read_sf("data/ne_110m_admin_0_countries/ne_110m_admin_0_countries.shp")
+
+world_shapes
+
+```
+
+```{r}
+# Interactive Plot - Overall vs age of the top 100 players
+# firstly, wrangling data.
+perf_summary <- data %>%
+  summarise(name, age, overall) %>%
+  arrange(desc(overall))  %>%
+  slice_head(n = 100)
+
+perf_summary
+
+# Next, plotting data
+
+perf_plot <- perf_summary %>%
+  ggplot(aes(x = age, y = overall)) +
+  geom_point() +
+  labs(x = "Age (years)", y = "Overall Performance Score") +
+  geom_point(aes(text = name))
+
+perf_plot
+
+perf_plotly <- ggplotly(perf_plot)
+perf_plotly
+saveWidget(perf_plotly, "perfPlot.html", selfcontained = TRUE)
+```
+
+```{r}
+# Spatial Plot - birthplaces of top 10 to 20 players on the world map, along with top 3 best stats.
+# Firstly, Wrangling data.
+Top20summary <- data %>%
+  arrange(desc(overall)) %>%
+  slice_max(overall, n = 20) %>%
+  mutate(Top_3_Categories = pmap_chr(select(., -club, -name, -age, -nationality, -overall), function(...) {
+    values <- c(...)
+    value_names <- names(values)
+    top_n <- value_names[order(values, decreasing = TRUE)][1:3]
+    paste("Top 3 Categories:", paste(top_n, collapse = ", "))
+  })) %>%
+  rename(c(NAME_LONG = nationality)) %>%
+  select(name, age, NAME_LONG, overall, Top_3_Categories)
+
+
+Top20summary
+
+# next, plotting on the world map. countries will be colored if they have a top 20 player of that nationality.
+
+top20_map <- world_shapes %>%
+  left_join(Top20summary, by = "NAME_LONG") 
+
+ggplot() +
+  geom_sf(data = top20_map, aes(fill = ifelse(!is.na(overall), "Yes", "No"))) +
+  scale_fill_manual(values = c("Yes" = "lightblue", "No" = "darkgray")) +
+  labs(title = "Countries with Top 20 FIFA 2018 Characters",
+       fill = "Top 20 Player from Country") +
+  theme_minimal() 
+
+
+```
+
+```{r}
+# Model Plot - free_kick_accuracy score as a function of finishing score for top 100 players.
+# firstly, wrangling data.
+kick_summary <- data %>%
+  summarise(name, age, free_kick_accuracy, finishing) %>%
+  arrange(desc(finishing))  %>%
+  slice_head(n = 100)
+
+kick_summary
+
+kick_plot <- kick_summary %>%
+  ggplot(aes(x = finishing, y = free_kick_accuracy)) +
+  geom_point() +
+  geom_smooth(method = "lm", 
+              formula = "y ~ x") + 
+  theme_minimal() +
+  labs(x = "Finishing Score", y = "Free Kick Accuracy Score")
+
+
+kick_plot
+
+
+```
