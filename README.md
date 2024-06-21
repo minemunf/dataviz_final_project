@@ -1,6 +1,6 @@
 # Data Visualization and Reproducible Research
 
-> Firstname Lastname. 
+> Michael Coombs
 
 Learn more about me in my [GitHub profile page](https://github.com/reiminer). 
 
