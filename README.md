@@ -10,24 +10,25 @@ The following is a sample of products created during the _"Data Visualization an
 
 ## Project 01
 
-In the `project_01/` folder you can find... _[add short description of your revised project here]_
+In the `project_01/` folder you can find my project that examines the 3 most fuel-efficient cars, both electric and gas-powered, for each year from 2012 to 2017. It also shows the most efficient car for each year from 2000-2017, and plots the efficiencies over time.
+
 
 **Sample data visualization:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://github.com/reisanar/figs/raw/master/echarts.png" width="70%" height="70%">
+![image](https://github.com/minemunf/dataviz_final_project/assets/73777889/679fde3b-b79d-4bb8-a5c1-086e39c7cf81)
+
 
 
 ## Project 02
 
-In this project, I explored ... _[short description of your revised project goes here]_ Find the code and report in the `project_02/` folder.
+In this project, I explored the classifications and statistics of Soccer/Football players represented in FIFA 2018's Roster. Find the code and report in the `project_02/` folder.
 
 **Sample data visualization:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://raw.githubusercontent.com/reisanar/dataviz_final_project/main/figures/fl_higher_ed.png" width="80%" height="80%">
+![image](https://github.com/minemunf/dataviz_final_project/assets/73777889/aec9e5fe-0933-4b93-9267-2f926e462859)
 
-(you can place your figures in the `figures/` folder and use the `![](path_to_picture)` option to add the pictures here)
+
+
 
 
 ## Project 03
