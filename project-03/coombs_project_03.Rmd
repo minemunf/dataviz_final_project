@@ -1,0 +1,210 @@
+---
+title: "Data Visualization for Exploratory Data Analysis"
+output: 
+  html_document:
+    keep_md: true
+    toc: true
+    toc_float: true
+---
+
+# Data Visualization Project 03
+
+
+In this exercise you will explore methods to create different types of data visualizations (such as plotting text data, or exploring the distributions of continuous variables).
+
+
+## PART 1: Density Plots
+
+Using the dataset obtained from FSU's [Florida Climate Center](https://climatecenter.fsu.edu/climate-data-access-tools/downloadable-data), for a station at Tampa International Airport (TPA) for 2022, attempt to recreate the charts shown below which were generated using data from 2016. You can read the 2022 dataset using the code below: 
+
+```{r, warning=FALSE}
+library(tidyverse)
+library(viridis)
+library(ggridges)
+weather_tpa <- read_csv("https://raw.githubusercontent.com/reisanar/datasets/master/tpa_weather_2022.csv")
+# random sample 
+weather_tpa
+```
+
+See https://www.reisanar.com/slides/relationships-models#10 for a reminder on how to use this type of dataset with the `lubridate` package for dates and times (example included in the slides uses data from 2016).
+
+Using the 2022 data: 
+
+(a) Create a plot like the one below:
+
+```{r, out.width="80%", fig.align='center'}
+#keeping sample image plot for reference.
+knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_temps_facet.png")
+
+#firstly, wrangling data
+tpa_clean <- weather_tpa %>% 
+  unite("doy", year, month, day, sep = "-") %>% 
+  mutate(doy = ymd(doy), 
+         max_temp = as.double(max_temp), 
+         min_temp = as.double(min_temp), 
+         precipitation = as.double(precipitation)) %>%
+   mutate(month = month(floor_date(doy, "month"), label = TRUE, abbr = FALSE))
+
+tpa_clean
+
+
+
+#plot seems to be facet wrapped for each month using viridis histograms for max temps over number of days, binwidth is 3
+monthlytempplot <- ggplot(tpa_clean, aes(x = max_temp, fill = month)) +
+  geom_histogram(binwidth = 3,  col="white", color = month) +
+  scale_x_continuous(limits = c(55, 100))+
+  scale_y_continuous(limits = c(0, 20))+
+  scale_fill_viridis(discrete = TRUE) +
+  facet_wrap(~ month, scales = "fixed")+
+  
+  
+  labs(x = "Maximum Temperatures", y = "Number of Days") +
+  theme(legend.position = "none") +
+  theme(axis.text.y = element_text(size = 11), axis.text.x = element_text(size = 11), axis.title = element_text(size=16), panel.grid.major = element_line(color = "grey"), panel.grid.minor = element_line(color = "grey"))+
+  theme(panel.border = element_rect(color="black", fill=NA), strip.background=element_rect(colour="black"), strip.text = element_text(size = 12))
+
+
+monthlytempplot
+
+# not sure why this wont work. charts seem to be excluding data points that should be included. all else (aside from minor theming and font size details) is correct. i have emailed my instructor, and am moving on awaiting reply.
+```
+
+Hint: the option `binwidth = 3` was used with the `geom_histogram()` function.
+
+(b) Create a plot like the one below:
+
+```{r, out.width="80%", fig.align='center'}
+knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_temps_density.png")
+
+densityplot <- ggplot(tpa_clean, aes(x=max_temp)) + 
+  geom_density(kernel = "epanechnikov", bw = 0.5, color="#323232", fill = "#7f7f7f", size = 1) +
+  scale_x_continuous(limits = c(55, 100)) +
+  labs(x = "Maximum Temperatures", y = "Density") +
+  theme(axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12), axis.title = element_text(size=16), panel.grid.major = element_line(color = "grey"), panel.grid.minor = element_line(color = "grey"))
+
+densityplot
+```
+
+Hint: check the `kernel` parameter of the `geom_density()` function, and use `bw = 0.5`.
+
+(c) Create a plot like the one below:
+
+```{r, out.width="80%", fig.align='center'}
+knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_temps_density_facet.png")
+
+
+monthlydensityplot <- ggplot(tpa_clean, aes(x=max_temp, fill = month)) + 
+  geom_density(alpha = 0.5, size = 0.75, kernel = "cosine") +
+  scale_fill_viridis(discrete = TRUE) +
+  scale_x_continuous(limits = c(55, 100)) +
+  scale_y_continuous(limits = c(0, 0.25)) +
+  labs(x = "Maximum Temperatures", y = "Density") +
+  theme(axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12), axis.title = element_text(size=16), panel.grid.major = element_line(color = "grey"), panel.grid.minor = element_line(color = "grey")) +
+  facet_wrap(~ month, scales = "fixed")+
+  labs(x = "Maximum Temperatures", y = "Density", title = "Density plots for each month in 2016") +
+  theme(legend.position = "none") +
+  theme(axis.text.y = element_text(size = 11), axis.text.x = element_text(size = 11), axis.title = element_text(size=16), title = element_text(size=16)) +
+  theme(panel.grid.major = element_line(color = "grey"), panel.grid.minor = element_line(color = "grey")) +
+  theme(panel.border = element_rect(color="black", fill=NA), strip.background=element_rect(colour="black"), strip.text = element_text(size = 12))
+
+
+monthlydensityplot
+
+# july has a graphical error on fill. not sure why.
+```
+
+Hint: default options for `geom_density()` were used. 
+
+(d) Generate a plot like the chart below:
+
+
+```{r, out.width="80%", fig.align='center'}
+knitr::include_graphics("https://github.com/reisanar/figs/raw/master/tpa_max_temps_ridges_plasma.png")
+
+
+monthlyridges <- tpa_clean %>%
+  ggplot(aes(x = max_temp, y = month, fill = stat(x))) +
+  geom_density_ridges_gradient(quantile_lines = TRUE, quantiles = 2) +
+  scale_x_continuous(limits = c(50, 100)) +
+  scale_fill_viridis(option = "plasma") +
+  labs(x = "Maximum Temperature (in Farenheit Degrees)") +
+  theme_minimal()+
+  theme(axis.title.x = element_text(size = 16),
+        axis.text.x = element_text(size = 12),
+        axis.text.y = element_text(size = 12), 
+        axis.title.y = element_blank(), 
+        legend.title = element_blank() ) 
+
+   # theme(panel.grid.major = element_line(color = "grey"), panel.grid.minor = element_line(color = "grey"), panel.background = element_rect(fill = "white"))
+  
+
+monthlyridges
+```
+
+Hint: use the`{ggridges}` package, and the `geom_density_ridges()` function paying close attention to the `quantile_lines` and `quantiles` parameters. The plot above uses the `plasma` option (color scale) for the _viridis_ palette.
+
+
+(e) Create a plot of your choice that uses the attribute for precipitation _(values of -99.9 for temperature or -99.99 for precipitation represent missing data)_.
+
+```{r}
+#will do a similar plot to part a, except i will discount those days where it didnt rain. this will show how much (in inches according to the FCC) it rains on the rainy days of each month. this means someone could hear that it's going to rain, and based on what month it is, know with some certainty how much it will be raining.
+
+#first, excluding nonzero data.
+tpa_precip <- tpa_clean %>%
+  filter(precipitation > 0.25)
+  
+tpa_precip
+
+
+monthlyprecipdensityplot <- ggplot(tpa_precip, aes(x=precipitation, fill = month)) +
+  geom_density(alpha = 0.5, size = 0.75, kernel = "cosine") +
+  scale_x_continuous(limits = c(0.2, 4)) +
+  scale_y_continuous(limits = c(0, 3)) +
+  scale_fill_viridis(discrete = TRUE) +
+  labs(x = "Inches of Rain", y = "Density") +
+  theme(axis.text.y = element_text(size = 12), axis.text.x = element_text(size = 12), axis.title = element_text(size=16), panel.grid.major = element_line(color = "grey"), panel.grid.minor = element_line(color = "grey")) +
+
+
+   facet_wrap(~ month, scales = "fixed")+
+  labs(x = "Maximum Temperatures", y = "Density", title = "Density plots for each month in 2016") +
+  theme(legend.position = "none") +
+  theme(axis.text.y = element_text(size = 11), axis.text.x = element_text(size = 11), axis.title = element_text(size=16), title = element_text(size=16)) +
+  theme(panel.grid.major = element_line(color = "grey"), panel.grid.minor = element_line(color = "grey")) +
+  theme(panel.border = element_rect(color="black", fill=NA), strip.background=element_rect(colour="black"), strip.text = element_text(size = 12))
+
+
+monthlyprecipdensityplot
+
+```
+
+
+## PART 2 
+
+> **You can choose to work on either Option (A) or Option (B)**. Remove from this template the option you decided not to work on. 
+
+
+### Option (A): Visualizing Text Data
+
+Review the set of slides (and additional resources linked in it) for visualizing text data: https://www.reisanar.com/slides/text-viz#1
+
+Choose any dataset with text data, and create at least one visualization with it. For example, you can create a frequency count of most used bigrams, a sentiment analysis of the text data, a network visualization of terms commonly used together, and/or a visualization of a topic modeling approach to the problem of identifying words/documents associated to different topics in the text data you decide to use. 
+
+Make sure to include a copy of the dataset in the `data/` folder, and reference your sources if different from the ones listed below:
+
+- [Billboard Top 100 Lyrics](https://github.com/reisanar/datasets/blob/master/BB_top100_2015.csv)
+
+- [RateMyProfessors comments](https://github.com/reisanar/datasets/blob/master/rmp_wit_comments.csv)
+
+- [FL Poly News Articles](https://github.com/reisanar/datasets/blob/master/flpoly_news_SP23.csv)
+
+
+(to get the "raw" data from any of the links listed above, simply click on the `raw` button of the GitHub page and copy the URL to be able to read it in your computer using the `read_csv()` function)
+
+
+```{r}
+#completing text data analysis on FL poly news articles.
+
+
+```
+
+
