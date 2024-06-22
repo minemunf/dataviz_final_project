@@ -10,7 +10,7 @@ The following is a sample of products created during the _"Data Visualization an
 
 ## Project 01
 
-In the `project_01/` folder you can find my project that examines the 3 most fuel-efficient cars, both electric and gas-powered, for each year from 2012 to 2017. It also shows the most efficient car for each year from 2000-2017, and plots the efficiencies over time.
+In the `project_01/` folder you can find my project that examines the 3 most fuel-efficient cars, both electric and gas-powered, for each year from 2012 to 2017. It also shows the most efficient car for each year from 2000-2017, and plots the efficiencies over time. My motivation for this project was to demonstrate the improvement of vehicle efficiency over time, while not inundating the reader with data or overestimating and boiling down the data too much. 
 
 
 **Sample data visualization:** 
@@ -21,7 +21,7 @@ In the `project_01/` folder you can find my project that examines the 3 most fue
 
 ## Project 02
 
-In this project, I explored the classifications and statistics of Soccer/Football players represented in FIFA 2018's Roster. Find the code and report in the `project_02/` folder.
+In this project, I explored the classifications and statistics of Soccer/Football players represented in EA's FIFA 2018 Roster. My motivation for this project was to find out what linked the best performers in the game, and by extension in real life. Find the code and report in the `project_02/` folder.
 
 **Sample data visualization:** 
 
@@ -33,7 +33,7 @@ In this project, I explored the classifications and statistics of Soccer/Footbal
 
 ## Project 03
 
-In this project, I explored and visualized the Florida Climate Center's Tampa International Airport Dataset for 2022, including how heavy the rain was throughout each month, and the maximum temperatures. I also explored and visualized a word count for Rate My Professor comments in various math classes.
+In this project, I explored and visualized the Florida Climate Center's Tampa International Airport Dataset for 2022, including how heavy the rain was throughout each month, and the maximum temperatures. I also explored and visualized a word count for Rate My Professor comments in various math classes. I wanted to look into predicting the intensity of rainfall on any given day, and break down what recurring items were mentioned among the students of these classes.
 
 **Sample data visualization:** 
 
