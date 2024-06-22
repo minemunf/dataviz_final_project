@@ -66,7 +66,6 @@ monthlytempplot <- ggplot(tpa_clean, aes(x = max_temp, fill = month)) +
 
 monthlytempplot
 
-# not sure why this wont work. charts seem to be excluding data points that should be included. all else (aside from minor theming and font size details) is correct. i have emailed my instructor, and am moving on awaiting reply.
 ```
 
 Hint: the option `binwidth = 3` was used with the `geom_histogram()` function.
@@ -202,9 +201,44 @@ Make sure to include a copy of the dataset in the `data/` folder, and reference 
 
 
 ```{r}
-#completing text data analysis on FL poly news articles.
+#completing text data analysis on RateMyProfessor comments to find the most common words used.
+#reading in libs and data.
+library(tidytext)
+
+comments <- read_csv("https://raw.githubusercontent.com/reisanar/datasets/master/rmp_wit_comments.csv")
+comments
+```
+
+```{r}
+#wrangling data for analysis. using words that have been mentioned twice or more, as every word in the comment has been mentioned at least one time, and i want to look at patterns and not random words that were there.
+
+unnestedcomments <- comments %>%
+  unnest_tokens(output = word, 
+                input = comments) %>%
+  anti_join(stop_words, by = "word") %>%
+  group_by(course, word) %>% 
+  count(word, sort = TRUE) %>% 
+  group_by(course) %>%
+  filter(n > 1) %>%
+  top_n(5, n) %>% 
+  mutate(word = fct_inorder(word))
+
+unnestedcomments
+
+#now to analyze.
+
+wordplot <- unnestedcomments %>%
+  ggplot(aes(x = n, y = fct_rev(word), fill = course)) +
+  geom_col(position = position_dodge(width = 0.9), width = 0.7) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL) +
+  scale_fill_viridis_d(option = "turbo") +
+  facet_wrap(vars(course), scales = "free_y") +
+  theme_minimal() 
+
+wordplot
+
 
 
 ```
-
 

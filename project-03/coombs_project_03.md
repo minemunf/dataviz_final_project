@@ -160,10 +160,6 @@ monthlytempplot
 
 <img src="coombs_project_03_files/figure-html/unnamed-chunk-2-2.png" width="80%" style="display: block; margin: auto;" />
 
-```r
-# not sure why this wont work. charts seem to be excluding data points that should be included. all else (aside from minor theming and font size details) is correct. i have emailed my instructor, and am moving on awaiting reply.
-```
-
 Hint: the option `binwidth = 3` was used with the `geom_histogram()` function.
 
 (b) Create a plot like the one below:
@@ -380,7 +376,117 @@ Make sure to include a copy of the dataset in the `data/` folder, and reference 
 
 
 ```r
-#completing text data analysis on FL poly news articles.
+#completing text data analysis on RateMyProfessor comments to find the most common words used.
+#reading in libs and data.
+library(tidytext)
 ```
 
+```
+## Warning: package 'tidytext' was built under R version 4.3.3
+```
+
+```r
+comments <- read_csv("https://raw.githubusercontent.com/reisanar/datasets/master/rmp_wit_comments.csv")
+```
+
+```
+## Rows: 18 Columns: 2
+## ── Column specification ────────────────────────────────────────────────────────
+## Delimiter: ","
+## chr (2): course, comments
+## 
+## ℹ Use `spec()` to retrieve the full column specification for this data.
+## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+```
+
+```r
+comments
+```
+
+```
+## # A tibble: 18 × 2
+##    course   comments                                                            
+##    <chr>    <chr>                                                               
+##  1 MATH1900 "He is very enthusiastic to help students. His course content is or…
+##  2 MATH250  "Great professor, really wants his students to pass. Puts all his n…
+##  3 MATH2860 "Lectures are clear and pretty easy to follow. He is always open to…
+##  4 MATH2860 "He is a great professor. He mixes humor into all of his lectures, …
+##  5 MATH2025 "i found him to be a good professor he keeps the class entertained …
+##  6 MATH2025 "He is a great professor. I would take him again in a heartbeat. Hi…
+##  7 MATH2860 "Great professor, occasional fun games to help learning, lectures a…
+##  8 MATH2025 "He is a great professor. Calculus has always been sort of scary to…
+##  9 MATH430  "He is an awesome professor! I'm not one for math at all and frankl…
+## 10 MATH430  "Best math teacher you will ever have. He is the man, plain and sim…
+## 11 MATH430  "Great Professor,  He is a really nice guy. Wants students to achie…
+## 12 MATH890  "Great guy. I loved the class. He has a great way of communicating …
+## 13 MATH890  "He is a talented teacher.  Can convey material well and often touc…
+## 14 MATH310  "One of my favorite professors, very smart and funny guy! The lectu…
+## 15 MATH890  "Easily the best mathematics professor I had at Wentworth. I was re…
+## 16 MATH890  "Great class. Relates well to students. Funny. Explains concepts we…
+## 17 MATH250  "Great classes, great semester!"                                    
+## 18 MATH250  "Had him for pre-calc. I know you guys are thinking pre Calc must b…
+```
+
+
+```r
+#wrangling data for analysis. using words that have been mentioned twice or more, as every word in the comment has been mentioned at least one time, and i want to look at patterns and not random words that were there.
+
+unnestedcomments <- comments %>%
+  unnest_tokens(output = word, 
+                input = comments) %>%
+  anti_join(stop_words, by = "word") %>%
+  group_by(course, word) %>% 
+  count(word, sort = TRUE) %>% 
+  group_by(course) %>%
+  filter(n > 1) %>%
+  top_n(5, n) %>% 
+  mutate(word = fct_inorder(word))
+
+unnestedcomments
+```
+
+```
+## # A tibble: 32 × 3
+## # Groups:   course [6]
+##    course   word           n
+##    <chr>    <fct>      <int>
+##  1 MATH2025 professor      4
+##  2 MATH430  math           4
+##  3 MATH250  calc           3
+##  4 MATH250  pre            3
+##  5 MATH250  professor      3
+##  6 MATH2860 class          3
+##  7 MATH2860 lectures       3
+##  8 MATH2860 professor      3
+##  9 MATH430  understand     3
+## 10 MATH890  class          3
+## # ℹ 22 more rows
+```
+
+```r
+#now to analyze.
+
+wordplot <- unnestedcomments %>%
+  ggplot(aes(x = n, y = fct_rev(word), fill = course)) +
+  geom_col(position = position_dodge(width = 0.9), width = 0.7) +
+  guides(fill = FALSE) +
+  labs(x = NULL, y = NULL) +
+  scale_fill_viridis_d(option = "turbo") +
+  facet_wrap(vars(course), scales = "free_y") +
+  theme_minimal() 
+```
+
+```
+## Warning: The `<scale>` argument of `guides()` cannot be `FALSE`. Use "none" instead as
+## of ggplot2 3.3.4.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+```
+
+```r
+wordplot
+```
+
+![](coombs_project_03_files/figure-html/unnamed-chunk-8-1.png)<!-- -->
 
