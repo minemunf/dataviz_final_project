@@ -33,14 +33,14 @@ In this project, I explored the classifications and statistics of Soccer/Footbal
 
 ## Project 03
 
-In this project, I explored ... _[short description of the data visualizations you for this part of the project produced goes here]_
+In this project, I explored and visualized the Florida Climate Center's Tampa International Airport Dataset for 2022, including how heavy the rain was throughout each month, and the maximum temperatures. I also explored and visualized a word count for Rate My Professor comments in various math classes.
 
 **Sample data visualization:** 
 
-_[include your favorite visualization from this project here]_
-<img src="https://github.com/reisanar/figs/raw/master/concrete_density.png" width="80%" height="80%">
+![image](https://github.com/minemunf/dataviz_final_project/assets/73777889/7c6f1460-9ed6-4e4d-a0a1-28209a4bcdd7)
+
 
 
 ### Moving Forward
 
-_Please add here a short reflection on what you learned and what you plan to continue exploring in terms of data visualization, data storytelling, reproducible research, and/or related topics._
+I have learned much in this course. While i was able to do basic analysis and data wrangling coming out of my Data Wrangling course, what I produced always made it clear that I am an outsider to the field of data analysis. I now feel more integrated and knowledgeable in my abilities to analyze, interpret, and communicate data in a way that a clear story can be told to those who wish to understand. I plan to continue using this knowledge in the future in both the engineering and corporate worlds as i start various businesses and work for various companies. I would like to continue exploring various datasets, such as those about world occurrences, now that i know how to explore and visualize them to get a coherent message out of them.
